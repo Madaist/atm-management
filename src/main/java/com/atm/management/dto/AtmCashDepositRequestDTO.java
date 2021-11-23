@@ -1,6 +1,6 @@
 package com.atm.management.dto;
 
-public class AtmCashDTO {
+public class AtmCashDepositRequestDTO {
 
     private int atmId;
     private int billValue;

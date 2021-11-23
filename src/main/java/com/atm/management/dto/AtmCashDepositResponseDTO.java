@@ -1,12 +1,12 @@
-package com.atm.management.model;
+package com.atm.management.dto;
 
-public class AtmCashDepositResponse {
+public class AtmCashDepositResponseDTO {
 
     private String status;
     private String code;
     private String message;
 
-    public AtmCashDepositResponse(String status, String code, String message) {
+    public AtmCashDepositResponseDTO(String status, String code, String message) {
         this.status = status;
         this.code = code;
         this.message = message;

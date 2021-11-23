@@ -1,12 +1,14 @@
 package com.atm.management.service;
 
 import com.atm.management.constants.ResponseConstants;
-import com.atm.management.dto.AtmCashDTO;
+import com.atm.management.dto.AtmCashDepositRequestDTO;
+import com.atm.management.dto.AtmCashWithdrawalRequestDTO;
+import com.atm.management.dto.AtmCashWithdrawalResponseDTO;
 import com.atm.management.exception.AtmCapacityExceededException;
 import com.atm.management.exception.DuplicateBillValuesException;
 import com.atm.management.exception.RequestSizeExceededException;
 import com.atm.management.model.AtmCash;
-import com.atm.management.model.AtmCashDepositResponse;
+import com.atm.management.dto.AtmCashDepositResponseDTO;
 import com.atm.management.repository.IAtmCashDAO;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,11 +31,11 @@ public class AtmCashService implements IAtmCashService {
         this.modelMapper = modelMapper;
     }
 
-    public AtmCashDepositResponse addCash(List<AtmCashDTO> request, int atmId) throws DuplicateBillValuesException, RequestSizeExceededException, AtmCapacityExceededException {
+    public AtmCashDepositResponseDTO addCash(List<AtmCashDepositRequestDTO> request, int atmId) throws DuplicateBillValuesException, RequestSizeExceededException, AtmCapacityExceededException {
 
         validateDepositRequest(request, atmId);
 
-        for (AtmCashDTO cash : request) {
+        for (AtmCashDepositRequestDTO cash : request) {
             AtmCash atmCash = modelMapper.map(cash, AtmCash.class);
             atmCash.setAtmId(atmId);
 
@@ -48,12 +50,18 @@ public class AtmCashService implements IAtmCashService {
             atmCashDAO.save(existingBill);
         }
 
-        return new AtmCashDepositResponse(ResponseConstants.DEPOSIT_SUCCEEDED.getStatus(),
+        return new AtmCashDepositResponseDTO(ResponseConstants.DEPOSIT_SUCCEEDED.getStatus(),
                 ResponseConstants.DEPOSIT_SUCCEEDED.getCode(),
                 ResponseConstants.DEPOSIT_SUCCEEDED.getMessage());
     }
 
-    private void validateDepositRequest(List<AtmCashDTO> request, int atmId) throws RequestSizeExceededException, DuplicateBillValuesException, AtmCapacityExceededException {
+    @Override
+    public AtmCashWithdrawalResponseDTO withdrawCash(List<AtmCashWithdrawalRequestDTO> request, int id) {
+        
+        return null;
+    }
+
+    private void validateDepositRequest(List<AtmCashDepositRequestDTO> request, int atmId) throws RequestSizeExceededException, DuplicateBillValuesException, AtmCapacityExceededException {
 
         // Check request size
         if (request.size() > 100) {
@@ -62,7 +70,7 @@ public class AtmCashService implements IAtmCashService {
 
         // Check if there are duplicates in the request
         Set<Integer> billValuesSet = request.stream()
-                .map(AtmCashDTO::getBillValue)
+                .map(AtmCashDepositRequestDTO::getBillValue)
                 .collect(Collectors.toSet());
         if (billValuesSet.size() != request.size()) {
             throw new DuplicateBillValuesException();
@@ -75,7 +83,7 @@ public class AtmCashService implements IAtmCashService {
                 .mapToInt(Integer::intValue)
                 .sum();
         Integer totalBillsCountFromRequest = request.stream()
-                .map(AtmCashDTO::getBillCount)
+                .map(AtmCashDepositRequestDTO::getBillCount)
                 .mapToInt(Integer::intValue)
                 .sum();
 
