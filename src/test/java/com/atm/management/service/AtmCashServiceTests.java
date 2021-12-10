@@ -19,7 +19,7 @@ public class AtmCashServiceTests {
     @Mock
     private ModelMapper modelMapper;
     @InjectMocks
-    private AtmCashService atmCashService;
+    private AtmCashServiceImpl atmCashService;
 
     @BeforeEach
     public void setUp(){

@@ -1,4 +1,4 @@
 package com.atm.management.exception;
 
-public class RequestSizeExceededException  extends Exception{
+public class RequestSizeExceededException  extends RuntimeException{
 }

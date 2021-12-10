@@ -1,5 +1,5 @@
 package com.atm.management.exception;
 
-public class DuplicateBillValuesException extends Exception{
+public class DuplicateBillValuesException extends RuntimeException{
 
 }

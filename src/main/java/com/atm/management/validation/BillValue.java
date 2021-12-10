@@ -1,16 +1,17 @@
 package com.atm.management.validation;
 
+import com.atm.management.constants.MessageConstants;
+
 import javax.validation.Constraint;
 import javax.validation.Payload;
 import java.lang.annotation.*;
 
-@Target({ElementType.METHOD, ElementType.FIELD})
+@Target({ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
-@Documented
 @Constraint(validatedBy = BillValueContraintValidator.class)
 public @interface BillValue {
 
-    String message() default "Bill value should only be 1, 5, 10, 50, 100, 200 or 500";
+    String message() default MessageConstants.BILL_VALUE_ERROR_MESSAGE;
 
     Class<?>[] groups() default {};
 

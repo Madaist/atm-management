@@ -3,11 +3,8 @@ package com.atm.management.controller;
 import com.atm.management.dto.AtmCashDepositRequestDTO;
 import com.atm.management.dto.AtmCashWithdrawalRequestDTO;
 import com.atm.management.dto.AtmCashWithdrawalResponseDTO;
-import com.atm.management.exception.AtmCapacityExceededException;
-import com.atm.management.exception.DuplicateBillValuesException;
-import com.atm.management.exception.RequestSizeExceededException;
 import com.atm.management.dto.AtmCashDepositResponseDTO;
-import com.atm.management.service.IAtmCashService;
+import com.atm.management.service.AtmCashService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,17 +17,15 @@ import java.util.List;
 @RequestMapping(value = "/api/v1/atm")
 public class AtmCashController {
 
-    private final IAtmCashService atmCashService;
+    private final AtmCashService atmCashService;
 
-    @Autowired
-    public AtmCashController(IAtmCashService atmCashService) {
+    public AtmCashController(AtmCashService atmCashService) {
         this.atmCashService = atmCashService;
     }
 
     @PostMapping(value = "/{id}/deposit")
     public ResponseEntity<AtmCashDepositResponseDTO> addCash(@Valid @RequestBody List<AtmCashDepositRequestDTO> request,
-                                                             @PathVariable int id)
-            throws DuplicateBillValuesException, RequestSizeExceededException, AtmCapacityExceededException {
+                                                             @PathVariable int id) {
 
         AtmCashDepositResponseDTO response = atmCashService.addCash(request, id);
         return new ResponseEntity<>(response, HttpStatus.OK);
