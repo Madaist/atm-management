@@ -7,9 +7,11 @@ import com.atm.management.dto.AtmCashWithdrawalResponseDTO;
 import com.atm.management.exception.AtmCapacityExceededException;
 import com.atm.management.exception.DuplicateBillValuesException;
 import com.atm.management.exception.RequestSizeExceededException;
+import com.atm.management.model.Atm;
 import com.atm.management.model.AtmCash;
 import com.atm.management.dto.AtmCashDepositResponseDTO;
-import com.atm.management.repository.IAtmCashDAO;
+import com.atm.management.repository.AtmCashDAO;
+import com.atm.management.repository.AtmDAO;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
@@ -20,24 +22,27 @@ import java.util.stream.Collectors;
 @Service
 public class AtmCashServiceImpl implements AtmCashService {
 
-    private final IAtmCashDAO atmCashDAO;
+    private final AtmCashDAO atmCashDAO;
+    private final AtmDAO atmDAO;
     private final ModelMapper modelMapper;
     private final int ATM_CAPACITY = 100000;
 
-    public AtmCashServiceImpl(IAtmCashDAO atmCashDAO, ModelMapper modelMapper) {
+    public AtmCashServiceImpl(AtmCashDAO atmCashDAO, AtmDAO atmDAO, ModelMapper modelMapper) {
         this.atmCashDAO = atmCashDAO;
+        this.atmDAO = atmDAO;
         this.modelMapper = modelMapper;
     }
 
     public AtmCashDepositResponseDTO addCash(List<AtmCashDepositRequestDTO> request, int atmId) {
 
         validateDepositRequest(request, atmId);
+        Atm atm = atmDAO.getById(atmId);
 
         for (AtmCashDepositRequestDTO cash : request) {
             AtmCash atmCash = modelMapper.map(cash, AtmCash.class);
-            atmCash.setAtmId(atmId);
+            atmCash.setAtm(atm);
 
-            AtmCash existingBill = atmCashDAO.findByBillValueAndAtmId(atmCash.getBillValue(), atmCash.getAtmId());
+            AtmCash existingBill = atmCashDAO.findByBillValueAndAtmId(atmCash.getBillValue(), atm.getId());
 
             if (existingBill != null) {
                 int newBillCount = existingBill.getBillCount() + cash.getBillCount();
@@ -59,7 +64,7 @@ public class AtmCashServiceImpl implements AtmCashService {
         return null;
     }
 
-    private void validateDepositRequest(List<AtmCashDepositRequestDTO> request, int atmId)  {
+    private void validateDepositRequest(List<AtmCashDepositRequestDTO> request, int atmId) {
 
         // Check request size
         if (request.size() > 100) {

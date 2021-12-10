@@ -16,8 +16,9 @@ public class AtmCash {
     @Column(name = "id")
     private Integer id;
 
-    @Column(name = "atm_id")
-    private Integer atmId;
+    @ManyToOne
+    @JoinColumn(name = "atm_id", nullable = false)
+    private Atm atm;
 
     @Column(name = "bill_value")
     @BillValue
@@ -28,6 +29,7 @@ public class AtmCash {
     @Max(100000)
     @NotNull
     private int billCount;
+
 
     public int getBillValue() {
         return billValue;
@@ -45,11 +47,11 @@ public class AtmCash {
         this.billCount = billCount;
     }
 
-    public Integer getAtmId() {
-        return atmId;
+    public Atm getAtm() {
+        return atm;
     }
 
-    public void setAtmId(Integer atmId) {
-        this.atmId = atmId;
+    public void setAtm(Atm atm) {
+        this.atm = atm;
     }
 }

@@ -1,7 +1,7 @@
 package com.atm.management.service;
 
 
-import com.atm.management.repository.IAtmCashDAO;
+import com.atm.management.repository.AtmCashDAO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -15,7 +15,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 public class AtmCashServiceTests {
 
     @Mock
-    private IAtmCashDAO atmCashDAO;
+    private AtmCashDAO atmCashDAO;
     @Mock
     private ModelMapper modelMapper;
     @InjectMocks
