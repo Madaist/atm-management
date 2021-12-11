@@ -8,7 +8,8 @@ public enum ResponseConstants {
     BAD_REQUEST("failed", "BAD_REQUEST", MessageConstants.BAD_REQUEST),
     INVALID_BILL_COUNT("failed", "INVALID_BILL_COUNT", MessageConstants.INVALID_BILL_COUNT),
     REQUEST_SIZE_EXCEEDED("failed", "REQUEST_SIZE_EXCEEDED", MessageConstants.REQUEST_SIZE_EXCEEDED),
-    ATM_CAPACITY_EXCEEDED("failed", "ATM_CAPACITY_EXCEEDED", MessageConstants.ATM_CAPACITY_EXCEEDED);
+    ATM_CAPACITY_EXCEEDED("failed", "ATM_CAPACITY_EXCEEDED", MessageConstants.ATM_CAPACITY_EXCEEDED),
+    ATM_NOT_FOUND("failed", "ATM_NOT_FOUND", MessageConstants.ATM_NOT_FOUND);
 
     private final String status;
     private final String code;

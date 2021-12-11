@@ -55,7 +55,8 @@ public class AtmResponseEntityExceptionHandler extends ResponseEntityExceptionHa
     @ExceptionHandler(value = {DuplicateBillValuesException.class})
     public ResponseEntity<AtmCashDepositResponseDTO> handleDuplicateBillValuesException(DuplicateBillValuesException ex) {
 
-        AtmCashDepositResponseDTO exception =  new AtmCashDepositResponseDTO(ResponseConstants.DUPLICATE_BILL_VALUES.getStatus(),
+        AtmCashDepositResponseDTO exception = new AtmCashDepositResponseDTO(
+                ResponseConstants.DUPLICATE_BILL_VALUES.getStatus(),
                 ResponseConstants.DUPLICATE_BILL_VALUES.getCode(),
                 ResponseConstants.DUPLICATE_BILL_VALUES.getMessage());
 
@@ -65,7 +66,8 @@ public class AtmResponseEntityExceptionHandler extends ResponseEntityExceptionHa
     @ExceptionHandler(value = {RequestSizeExceededException.class})
     public ResponseEntity<AtmCashDepositResponseDTO> handleRequestSizeExceededException(RequestSizeExceededException ex) {
 
-        AtmCashDepositResponseDTO exception = new AtmCashDepositResponseDTO(ResponseConstants.REQUEST_SIZE_EXCEEDED.getStatus(),
+        AtmCashDepositResponseDTO exception = new AtmCashDepositResponseDTO(
+                ResponseConstants.REQUEST_SIZE_EXCEEDED.getStatus(),
                 ResponseConstants.REQUEST_SIZE_EXCEEDED.getCode(),
                 ResponseConstants.REQUEST_SIZE_EXCEEDED.getMessage());
 
@@ -75,10 +77,22 @@ public class AtmResponseEntityExceptionHandler extends ResponseEntityExceptionHa
     @ExceptionHandler(value = {AtmCapacityExceededException.class})
     public ResponseEntity<AtmCashDepositResponseDTO> handleAtmCapacityExceededException(AtmCapacityExceededException ex) {
 
-        AtmCashDepositResponseDTO exception = new AtmCashDepositResponseDTO(ResponseConstants.ATM_CAPACITY_EXCEEDED.getStatus(),
+        AtmCashDepositResponseDTO exception = new AtmCashDepositResponseDTO(
+                ResponseConstants.ATM_CAPACITY_EXCEEDED.getStatus(),
                 ResponseConstants.ATM_CAPACITY_EXCEEDED.getCode(),
                 ResponseConstants.ATM_CAPACITY_EXCEEDED.getMessage());
 
         return new ResponseEntity<>(exception, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(value = {AtmNotFoundException.class})
+    public ResponseEntity<AtmCashDepositResponseDTO> handleAtmNotFoundException(AtmNotFoundException ex) {
+
+        AtmCashDepositResponseDTO exception = new AtmCashDepositResponseDTO(
+                ResponseConstants.ATM_NOT_FOUND.getStatus(),
+                ResponseConstants.ATM_NOT_FOUND.getCode(),
+                ResponseConstants.ATM_NOT_FOUND.getMessage());
+
+        return new ResponseEntity<>(exception, HttpStatus.NOT_FOUND);
     }
 }

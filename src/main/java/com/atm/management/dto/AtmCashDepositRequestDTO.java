@@ -9,7 +9,6 @@ public class AtmCashDepositRequestDTO {
     private int billCount;
 
     public AtmCashDepositRequestDTO(int billValue, int billCount) {
-        this.atmId = atmId;
         this.billValue = billValue;
         this.billCount = billCount;
     }
