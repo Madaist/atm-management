@@ -30,6 +30,14 @@ public class AtmCash {
     @NotNull
     private int billCount;
 
+    public AtmCash() {
+    }
+
+    public AtmCash(Atm atm, int billValue, int billCount) {
+        this.atm = atm;
+        this.billValue = billValue;
+        this.billCount = billCount;
+    }
 
     public int getBillValue() {
         return billValue;

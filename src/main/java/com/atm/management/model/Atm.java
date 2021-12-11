@@ -20,6 +20,17 @@ public class Atm {
     @OneToMany(mappedBy="atm")
     private Set<AtmCash> cash;
 
+    public Atm(Integer id, String street, String number, String city, String country) {
+        this.id = id;
+        this.street = street;
+        this.number = number;
+        this.city = city;
+        this.country = country;
+    }
+
+    public Atm() {
+    }
+
     public Integer getId() {
         return id;
     }

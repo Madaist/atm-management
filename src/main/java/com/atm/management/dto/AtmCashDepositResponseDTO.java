@@ -1,5 +1,7 @@
 package com.atm.management.dto;
 
+import java.util.Objects;
+
 public class AtmCashDepositResponseDTO {
 
     private String status;
@@ -34,5 +36,18 @@ public class AtmCashDepositResponseDTO {
 
     public void setMessage(String message) {
         this.message = message;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        AtmCashDepositResponseDTO that = (AtmCashDepositResponseDTO) o;
+        return Objects.equals(status, that.status) && Objects.equals(code, that.code) && Objects.equals(message, that.message);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(status, code, message);
     }
 }
