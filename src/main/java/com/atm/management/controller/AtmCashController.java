@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping(value = "/api/v1/atm")
@@ -31,10 +32,10 @@ public class AtmCashController {
     }
 
     @PostMapping(value = "/{id}/withdraw")
-    public ResponseEntity<AtmCashWithdrawalResponseDTO> withdrawCash(@Valid @RequestBody List<AtmCashWithdrawalRequestDTO> request,
-                                                                     @PathVariable int id) {
+    public ResponseEntity<?> withdrawCash(@RequestBody AtmCashWithdrawalRequestDTO request,
+                                          @PathVariable int id) {
 
-        AtmCashWithdrawalResponseDTO response = atmCashService.withdrawCash(request, id);
-        return new ResponseEntity<>( HttpStatus.OK);
+        Map<Integer, Integer> response = atmCashService.withdrawCash(request, id);
+        return new ResponseEntity<>(response,  HttpStatus.OK);
     }
 }

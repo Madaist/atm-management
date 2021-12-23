@@ -2,7 +2,10 @@ package com.atm.management.dto;
 
 public class AtmCashWithdrawalRequestDTO {
 
-    public int amount;
+    private int amount;
+
+    public AtmCashWithdrawalRequestDTO() {
+    }
 
     public AtmCashWithdrawalRequestDTO(int amount) {
         this.amount = amount;

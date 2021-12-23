@@ -3,6 +3,7 @@ package com.atm.management.exception;
 import com.atm.management.constants.MessageConstants;
 import com.atm.management.constants.ResponseConstants;
 import com.atm.management.dto.AtmCashDepositResponseDTO;
+import com.atm.management.dto.AtmCashWithdrawalResponseDTO;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -53,7 +54,7 @@ public class AtmResponseEntityExceptionHandler extends ResponseEntityExceptionHa
     }
 
     @ExceptionHandler(value = {DuplicateBillValuesException.class})
-    public ResponseEntity<AtmCashDepositResponseDTO> handleDuplicateBillValuesException(DuplicateBillValuesException ex) {
+    public ResponseEntity<AtmCashDepositResponseDTO> handleDuplicateBillValuesException() {
 
         AtmCashDepositResponseDTO exception = new AtmCashDepositResponseDTO(
                 ResponseConstants.DUPLICATE_BILL_VALUES.getStatus(),
@@ -64,7 +65,7 @@ public class AtmResponseEntityExceptionHandler extends ResponseEntityExceptionHa
     }
 
     @ExceptionHandler(value = {RequestSizeExceededException.class})
-    public ResponseEntity<AtmCashDepositResponseDTO> handleRequestSizeExceededException(RequestSizeExceededException ex) {
+    public ResponseEntity<AtmCashDepositResponseDTO> handleRequestSizeExceededException() {
 
         AtmCashDepositResponseDTO exception = new AtmCashDepositResponseDTO(
                 ResponseConstants.REQUEST_SIZE_EXCEEDED.getStatus(),
@@ -75,7 +76,7 @@ public class AtmResponseEntityExceptionHandler extends ResponseEntityExceptionHa
     }
 
     @ExceptionHandler(value = {AtmCapacityExceededException.class})
-    public ResponseEntity<AtmCashDepositResponseDTO> handleAtmCapacityExceededException(AtmCapacityExceededException ex) {
+    public ResponseEntity<AtmCashDepositResponseDTO> handleAtmCapacityExceededException() {
 
         AtmCashDepositResponseDTO exception = new AtmCashDepositResponseDTO(
                 ResponseConstants.ATM_CAPACITY_EXCEEDED.getStatus(),
@@ -86,7 +87,7 @@ public class AtmResponseEntityExceptionHandler extends ResponseEntityExceptionHa
     }
 
     @ExceptionHandler(value = {AtmNotFoundException.class})
-    public ResponseEntity<AtmCashDepositResponseDTO> handleAtmNotFoundException(AtmNotFoundException ex) {
+    public ResponseEntity<AtmCashDepositResponseDTO> handleAtmNotFoundException() {
 
         AtmCashDepositResponseDTO exception = new AtmCashDepositResponseDTO(
                 ResponseConstants.ATM_NOT_FOUND.getStatus(),
@@ -94,5 +95,39 @@ public class AtmResponseEntityExceptionHandler extends ResponseEntityExceptionHa
                 ResponseConstants.ATM_NOT_FOUND.getMessage());
 
         return new ResponseEntity<>(exception, HttpStatus.NOT_FOUND);
+    }
+
+
+    @ExceptionHandler(value = {ImpossibleBillCombinationException.class})
+    public ResponseEntity<AtmCashWithdrawalResponseDTO> handleImpossibleBillCombinationException() {
+
+        AtmCashWithdrawalResponseDTO exception = new AtmCashWithdrawalResponseDTO(
+                ResponseConstants.IMPOSSIBLE_BILLS_COMBINATION.getStatus(),
+                ResponseConstants.IMPOSSIBLE_BILLS_COMBINATION.getCode(),
+                ResponseConstants.IMPOSSIBLE_BILLS_COMBINATION.getMessage());
+
+        return new ResponseEntity<>(exception, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(value = {AmountExceedsAtmCashException.class})
+    public ResponseEntity<AtmCashWithdrawalResponseDTO> handleAmountExceedsAtmCashException() {
+
+        AtmCashWithdrawalResponseDTO exception = new AtmCashWithdrawalResponseDTO(
+                ResponseConstants.REQUESTED_AMOUNT_TOO_LARGE.getStatus(),
+                ResponseConstants.REQUESTED_AMOUNT_TOO_LARGE.getCode(),
+                ResponseConstants.REQUESTED_AMOUNT_TOO_LARGE.getMessage());
+
+        return new ResponseEntity<>(exception, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(value = {NegativeAmountException.class})
+    public ResponseEntity<AtmCashWithdrawalResponseDTO> handleNegativeAmountException() {
+
+        AtmCashWithdrawalResponseDTO exception = new AtmCashWithdrawalResponseDTO(
+                ResponseConstants.REQUESTED_NEGATIVE_AMOUNT.getStatus(),
+                ResponseConstants.REQUESTED_NEGATIVE_AMOUNT.getCode(),
+                ResponseConstants.REQUESTED_NEGATIVE_AMOUNT.getMessage());
+
+        return new ResponseEntity<>(exception, HttpStatus.BAD_REQUEST);
     }
 }

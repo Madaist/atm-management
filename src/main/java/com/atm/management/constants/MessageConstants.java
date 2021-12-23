@@ -14,6 +14,9 @@ public class MessageConstants {
     public static final String DUPLICATE_BILL_VALUES = "The request contains duplicate bill values.";
     public static final String ATM_CAPACITY_EXCEEDED = "The atm has a capacity of 100.000 bills";
     public static final String ATM_NOT_FOUND = "The atm doesn't exist";
+    public static final String IMPOSSIBLE_BILLS_COMBINATION = "Requested amount can not be computed";
+    public static final String REQUESTED_AMOUNT_TOO_LARGE = "The requested amount doesn't exist in the ATM at the moment. Please, try to withdraw a smaller amount.";
+    public static final String REQUESTED_NEGATIVE_AMOUNT = "Requested amount can not be smaller than or equal to zero. Please, insert a positive number";
 
     private MessageConstants() {
     }

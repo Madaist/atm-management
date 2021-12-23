@@ -1,11 +1,12 @@
 package com.atm.management.model;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.Set;
 
 @Entity
 @Table(name = "atm")
-public class Atm {
+public class Atm implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

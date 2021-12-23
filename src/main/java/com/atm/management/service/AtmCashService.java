@@ -9,10 +9,11 @@ import com.atm.management.exception.RequestSizeExceededException;
 import com.atm.management.dto.AtmCashDepositResponseDTO;
 
 import java.util.List;
+import java.util.Map;
 
 public interface AtmCashService {
 
     AtmCashDepositResponseDTO addCash(List<AtmCashDepositRequestDTO> request, int atmId);
 
-    AtmCashWithdrawalResponseDTO withdrawCash(List<AtmCashWithdrawalRequestDTO> request, int id);
+    Map<Integer, Integer> withdrawCash(AtmCashWithdrawalRequestDTO request, int id);
 }
