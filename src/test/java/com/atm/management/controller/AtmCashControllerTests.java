@@ -3,9 +3,8 @@ package com.atm.management.controller;
 import com.atm.management.constants.ResponseConstants;
 import com.atm.management.dto.AtmCashDepositRequestDTO;
 import com.atm.management.dto.AtmCashDepositResponseDTO;
-import com.atm.management.exception.AtmCapacityExceededException;
-import com.atm.management.exception.DuplicateBillValuesException;
-import com.atm.management.exception.RequestSizeExceededException;
+import com.atm.management.dto.AtmCashWithdrawalRequestDTO;
+import com.atm.management.exception.*;
 import com.atm.management.service.AtmCashService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -17,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.TreeMap;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -31,13 +31,14 @@ public class AtmCashControllerTests {
     private AtmCashController atmCashController;
 
     private int atmId;
-    List<AtmCashDepositRequestDTO> request;
+    List<AtmCashDepositRequestDTO> depositCashRequest;
+    AtmCashWithdrawalRequestDTO withdrawalRequest;
 
     @BeforeEach
     public void setUp() {
         atmId = 1;
-        request = new ArrayList<>();
-
+        depositCashRequest = new ArrayList<>();
+        withdrawalRequest = new AtmCashWithdrawalRequestDTO(10);
     }
 
     @Test
@@ -47,35 +48,76 @@ public class AtmCashControllerTests {
                 ResponseConstants.DEPOSIT_SUCCEEDED.getCode(),
                 ResponseConstants.DEPOSIT_SUCCEEDED.getMessage());
 
-        when(atmCashService.addCash(request, atmId)).thenReturn(successResponse);
+        when(atmCashService.addCash(depositCashRequest, atmId)).thenReturn(successResponse);
         ResponseEntity<AtmCashDepositResponseDTO> expectedResult = new ResponseEntity<>(successResponse, HttpStatus.OK);
 
-        assertEquals(expectedResult, atmCashController.addCash(request, atmId));
+        assertEquals(expectedResult, atmCashController.addCash(depositCashRequest, atmId));
     }
 
     @Test
     public void addCash_shouldThrowDuplicateBillValuesException_whenThereAreDuplicatesInRequest() {
 
-        when(atmCashService.addCash(request, atmId)).thenThrow(new DuplicateBillValuesException());
+        when(atmCashService.addCash(depositCashRequest, atmId)).thenThrow(new DuplicateBillValuesException());
 
-        assertThrows(DuplicateBillValuesException.class, () -> atmCashController.addCash(request, atmId));
+        assertThrows(DuplicateBillValuesException.class, () -> atmCashController.addCash(depositCashRequest, atmId));
     }
 
     @Test
     public void addCash_shouldThrowAtmCapacityExceededException_whenRequestExceedsAtmCapacity() {
 
-        when(atmCashService.addCash(request, atmId)).thenThrow(new AtmCapacityExceededException());
+        when(atmCashService.addCash(depositCashRequest, atmId)).thenThrow(new AtmCapacityExceededException());
 
-        assertThrows(AtmCapacityExceededException.class, () -> atmCashController.addCash(request, atmId));
+        assertThrows(AtmCapacityExceededException.class, () -> atmCashController.addCash(depositCashRequest, atmId));
     }
 
     @Test
     public void addCash_shouldThrowRequestSizeExceededException_whenRequestSizeIsTooLarge() {
 
-        when(atmCashService.addCash(request, atmId)).thenThrow(new RequestSizeExceededException());
+        when(atmCashService.addCash(depositCashRequest, atmId)).thenThrow(new RequestSizeExceededException());
 
-        assertThrows(RequestSizeExceededException.class, () -> atmCashController.addCash(request, atmId));
+        assertThrows(RequestSizeExceededException.class, () -> atmCashController.addCash(depositCashRequest, atmId));
     }
 
+    @Test
+    public void withdrawCash_shouldThrowAtmNotFoundException_whenUsingNonExistingAtm() {
 
+        when(atmCashService.withdrawCash(withdrawalRequest, atmId)).thenThrow(new AtmNotFoundException());
+
+        assertThrows(AtmNotFoundException.class, () -> atmCashController.withdrawCash(withdrawalRequest, atmId));
+    }
+
+    @Test
+    public void withdrawCash_shoulThrowNegativeAmountException_whenAmountIsBelowZero() {
+
+        when(atmCashService.withdrawCash(withdrawalRequest, atmId)).thenThrow(new NegativeAmountException());
+
+        assertThrows(NegativeAmountException.class, () -> atmCashController.withdrawCash(withdrawalRequest, atmId));
+    }
+
+    @Test
+    public void withdrawCash_shoulThrowAmountExceedsAtmCashException_whenAmountIsTooBig() {
+
+        when(atmCashService.withdrawCash(withdrawalRequest, atmId)).thenThrow(new AmountExceedsAtmCashException());
+
+        assertThrows(AmountExceedsAtmCashException.class, () -> atmCashController.withdrawCash(withdrawalRequest, atmId));
+    }
+
+    @Test
+    public void withdrawCash_shoulThrowImpossibleBillCombinationException_whenAmountCannotBeComputed() {
+
+        when(atmCashService.withdrawCash(withdrawalRequest, atmId)).thenThrow(new ImpossibleBillCombinationException());
+
+        assertThrows(ImpossibleBillCombinationException.class, () -> atmCashController.withdrawCash(withdrawalRequest, atmId));
+    }
+
+    @Test
+    public void withdrawCash_shouldReturnSuccessfulResponse_whenAmountCanBeComputed() {
+
+        when(atmCashService.withdrawCash(withdrawalRequest, atmId)).thenReturn(new TreeMap<>());
+
+        ResponseEntity<?> actualResponse = atmCashController.withdrawCash(withdrawalRequest, atmId);
+
+        assertEquals(new TreeMap<>(), actualResponse.getBody());
+        assertEquals(HttpStatus.OK, actualResponse.getStatusCode());
+    }
 }

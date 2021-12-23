@@ -88,6 +88,7 @@ public class AtmCashServiceImpl implements AtmCashService {
         if (request.getAmount() <= 0) {
             throw new NegativeAmountException();
         }
+
         List<AtmCash> atmCash = atmCashDAO.findByAtmId(atmId);
         int totalAtmCash = atmCash.stream()
                 .map(a -> a.getBillValue() * a.getBillCount())
