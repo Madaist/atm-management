@@ -10,7 +10,7 @@ public class MessageConstants {
     public static final String DEPOSIT_SUCCEEDED = "Cash was successfully added";
     public static final String INVALID_BILL_COUNT = "Number of bills should be between 1 and 1000000";
 
-    public static final String REQUEST_SIZE_EXCEEDED = "The size of the request is too large. Please, introduce a number of pairs bill value : bill count smaller than 100";
+    public static final String REQUEST_SIZE_EXCEEDED = "The size of the request is too large. Please, introduce a number of pairs smaller than 100";
     public static final String DUPLICATE_BILL_VALUES = "The request contains duplicate bill values.";
     public static final String ATM_CAPACITY_EXCEEDED = "The atm has a capacity of 100.000 bills";
     public static final String ATM_NOT_FOUND = "The atm doesn't exist";

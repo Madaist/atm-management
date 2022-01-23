@@ -6,12 +6,13 @@ import com.atm.management.dto.AtmCashWithdrawalRequestDTO;
 import com.atm.management.exception.*;
 import com.atm.management.model.Atm;
 import com.atm.management.model.AtmCash;
-import com.atm.management.dto.AtmCashDepositResponseDTO;
+import com.atm.management.dto.ApiResponse;
 import com.atm.management.repository.AtmCashDAO;
 import com.atm.management.repository.AtmDAO;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.apache.commons.lang.SerializationUtils;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -29,14 +30,9 @@ public class AtmCashServiceImpl implements AtmCashService {
         this.modelMapper = modelMapper;
     }
 
-    public AtmCashDepositResponseDTO addCash(List<AtmCashDepositRequestDTO> request, int atmId) {
+    public ApiResponse addCash(List<AtmCashDepositRequestDTO> request, int atmId) {
 
         Optional<Atm> atm = atmDAO.findById(atmId);
-        if (!atm.isPresent()) {
-            throw new AtmNotFoundException();
-        }
-
-        validateDepositRequest(request, atmId);
 
         for (AtmCashDepositRequestDTO cash : request) {
             AtmCash atmCash = modelMapper.map(cash, AtmCash.class);
@@ -55,7 +51,7 @@ public class AtmCashServiceImpl implements AtmCashService {
             atmCashDAO.save(existingBill);
         }
 
-        return new AtmCashDepositResponseDTO(
+        return new ApiResponse(
                 ResponseConstants.DEPOSIT_SUCCEEDED.getStatus(),
                 ResponseConstants.DEPOSIT_SUCCEEDED.getCode(),
                 ResponseConstants.DEPOSIT_SUCCEEDED.getMessage());
@@ -63,8 +59,6 @@ public class AtmCashServiceImpl implements AtmCashService {
 
     @Override
     public Map<Integer, Integer> withdrawCash(AtmCashWithdrawalRequestDTO request, int atmId) {
-
-        validateWithdrawalRequest(request, atmId);
 
         int[] bills = computeNeededBills(request.getAmount(), atmId);
 
@@ -74,29 +68,8 @@ public class AtmCashServiceImpl implements AtmCashService {
             decreaseAtmAvailableCash(mappedBills, atmId);
             return mappedBills;
 
-        } else
+        } else {
             throw new ImpossibleBillCombinationException();
-    }
-
-    private void validateWithdrawalRequest(AtmCashWithdrawalRequestDTO request, int atmId) {
-
-        Optional<Atm> atm = atmDAO.findById(atmId);
-        if (!atm.isPresent()) {
-            throw new AtmNotFoundException();
-        }
-
-        if (request.getAmount() <= 0) {
-            throw new NegativeAmountException();
-        }
-
-        List<AtmCash> atmCash = atmCashDAO.findByAtmId(atmId);
-        int totalAtmCash = atmCash.stream()
-                .map(a -> a.getBillValue() * a.getBillCount())
-                .mapToInt(Integer::intValue)
-                .sum();
-
-        if (request.getAmount() > totalAtmCash) {
-            throw new AmountExceedsAtmCashException();
         }
     }
 
@@ -124,11 +97,11 @@ public class AtmCashServiceImpl implements AtmCashService {
                     AtmCash currentBill = processedAtmCash.get(j);
                     if (currentBill.getBillCount() > 0) {
 
-                        int p = i + denominations.get(j);
-                        if (p <= amount) {
-                            if (count[p] == 0 || count[p] > count[i] + 1) {
-                                count[p] = count[i] + 1;
-                                from[p] = j;
+                        int newAmount = i + denominations.get(j);
+                        if (newAmount <= amount) {
+                            if (count[newAmount] == 0 || count[newAmount] > count[i] + 1) {
+                                count[newAmount] = count[i] + 1;
+                                from[newAmount] = j;
                                 currentBill.setBillCount(currentBill.getBillCount() - 1);
                             }
                         }
@@ -165,6 +138,7 @@ public class AtmCashServiceImpl implements AtmCashService {
         return mappedBills;
     }
 
+    @Transactional
     public void decreaseAtmAvailableCash(Map<Integer, Integer> withdrawnCash, int atmId) {
 
         for (Map.Entry<Integer, Integer> entry : withdrawnCash.entrySet()) {
@@ -179,35 +153,5 @@ public class AtmCashServiceImpl implements AtmCashService {
         }
     }
 
-    private void validateDepositRequest(List<AtmCashDepositRequestDTO> request, int atmId) {
 
-        // Check request size
-        if (request.size() > 100) {
-            throw new RequestSizeExceededException();
-        }
-
-        // Check if there are duplicates in the request
-        Set<Integer> billValuesSet = request.stream()
-                .map(AtmCashDepositRequestDTO::getBillValue)
-                .collect(Collectors.toSet());
-        if (billValuesSet.size() != request.size()) {
-            throw new DuplicateBillValuesException();
-        }
-
-        // Check if the request will exceed atm's capacity
-        List<AtmCash> atmCash = atmCashDAO.findByAtmId(atmId);
-        Integer totalBillsCountFromAtm = atmCash.stream()
-                .map(AtmCash::getBillCount)
-                .mapToInt(Integer::intValue)
-                .sum();
-        Integer totalBillsCountFromRequest = request.stream()
-                .map(AtmCashDepositRequestDTO::getBillCount)
-                .mapToInt(Integer::intValue)
-                .sum();
-
-        int ATM_CAPACITY = 100000;
-        if (totalBillsCountFromRequest + totalBillsCountFromAtm > ATM_CAPACITY) {
-            throw new AtmCapacityExceededException();
-        }
-    }
 }

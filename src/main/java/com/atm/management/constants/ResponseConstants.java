@@ -1,7 +1,5 @@
 package com.atm.management.constants;
 
-import com.atm.management.dto.AtmCashWithdrawalResponseDTO;
-
 public enum ResponseConstants {
 
     INVALID_BILL_VALUE("failed", "INVALID_BILL_VALUE", MessageConstants.BILL_VALUE_ERROR_MESSAGE),
