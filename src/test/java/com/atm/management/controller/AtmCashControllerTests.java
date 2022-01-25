@@ -82,7 +82,9 @@ public class AtmCashControllerTests {
     @Test
     public void addCash_shouldReturn400_whenThereAreDuplicatesInRequest() throws Exception {
 
-        doThrow(new DuplicateBillValuesException()).when(requestValidator).validateDepositRequest(depositCashRequest, atmId);
+        doThrow(new DuplicateBillValuesException())
+                .when(requestValidator)
+                .validateDepositRequest(depositCashRequest, atmId);
 
         ApiResponse response = processResponse(
                 mockMvc.perform(MockMvcRequestBuilders
@@ -100,7 +102,9 @@ public class AtmCashControllerTests {
     @Test
     public void addCash_shouldReturn400_whenRequestExceedsAtmCapacity() throws Exception {
 
-        doThrow(new AtmCapacityExceededException()).when(requestValidator).validateDepositRequest(depositCashRequest, atmId);
+        doThrow(new AtmCapacityExceededException())
+                .when(requestValidator)
+                .validateDepositRequest(depositCashRequest, atmId);
 
         ApiResponse response = processResponse(
                 mockMvc.perform(MockMvcRequestBuilders
@@ -118,7 +122,9 @@ public class AtmCashControllerTests {
     @Test
     public void addCash_shouldReturn400_whenRequestSizeIsTooLarge() throws Exception {
 
-        doThrow(new RequestSizeExceededException()).when(requestValidator).validateDepositRequest(depositCashRequest, atmId);
+        doThrow(new RequestSizeExceededException())
+                .when(requestValidator)
+                .validateDepositRequest(depositCashRequest, atmId);
 
         ApiResponse response = processResponse(mockMvc.perform(MockMvcRequestBuilders
                         .post(CASH_CONTROLLER_DEPOSIT_ENDPOINT)
@@ -153,7 +159,9 @@ public class AtmCashControllerTests {
     @Test
     public void withdrawCash_shouldReturn400_whenAmountIsBelowZero() throws Exception {
 
-        doThrow(new NegativeAmountException()).when(requestValidator).validateWithdrawalRequest(withdrawalRequest, atmId);
+        doThrow(new NegativeAmountException())
+                .when(requestValidator)
+                .validateWithdrawalRequest(any(AtmCashWithdrawalRequestDTO.class), anyInt());
 
         ApiResponse response = processResponse(mockMvc.perform(MockMvcRequestBuilders
                         .post(CASH_CONTROLLER_WITHDRAW_ENDPOINT)
@@ -165,13 +173,16 @@ public class AtmCashControllerTests {
 
         assertEquals("Requested amount can not be smaller than or equal to zero. Please, insert a positive number",
                 response.getMessage());
-        verify(requestValidator, times(1)).validateWithdrawalRequest(withdrawalRequest, atmId);
+        verify(requestValidator, times(1))
+                .validateWithdrawalRequest(any(AtmCashWithdrawalRequestDTO.class), anyInt());
     }
 
     @Test
     public void withdrawCash_shouldReturn404_whenAmountIsTooBig() throws Exception {
 
-        doThrow(new AmountExceedsAtmCashException()).when(requestValidator).validateWithdrawalRequest(withdrawalRequest, atmId);
+        doThrow(new AmountExceedsAtmCashException())
+                .when(requestValidator)
+                .validateWithdrawalRequest(any(AtmCashWithdrawalRequestDTO.class), anyInt());
 
         ApiResponse response = processResponse(mockMvc.perform(MockMvcRequestBuilders
                         .post(CASH_CONTROLLER_WITHDRAW_ENDPOINT)
@@ -183,14 +194,17 @@ public class AtmCashControllerTests {
 
         assertEquals("The requested amount doesn't exist in the ATM at the moment. Please, try to withdraw a smaller amount.",
                 response.getMessage());
-        verify(requestValidator, times(1)).validateWithdrawalRequest(withdrawalRequest, atmId);
+        verify(requestValidator, times(1))
+                .validateWithdrawalRequest(any(AtmCashWithdrawalRequestDTO.class), anyInt());
     }
 
     @Test
     public void withdrawCash_shouldReturn400_whenAmountCannotBeComputed() throws Exception {
 
-        doNothing().when(requestValidator).validateWithdrawalRequest(withdrawalRequest, atmId);
-        when(atmCashService.withdrawCash(withdrawalRequest, atmId)).thenThrow(new ImpossibleBillCombinationException());
+        doNothing().when(requestValidator)
+                .validateWithdrawalRequest(any(AtmCashWithdrawalRequestDTO.class), anyInt());
+        when(atmCashService.withdrawCash(any(AtmCashWithdrawalRequestDTO.class), anyInt()))
+                .thenThrow(new ImpossibleBillCombinationException());
 
         ApiResponse response = processResponse(mockMvc.perform(MockMvcRequestBuilders
                         .post(CASH_CONTROLLER_WITHDRAW_ENDPOINT)
@@ -201,14 +215,17 @@ public class AtmCashControllerTests {
                 .andReturn(), objectMapper);
 
         assertEquals("Requested amount can not be computed", response.getMessage());
-        verify(requestValidator, times(1)).validateWithdrawalRequest(withdrawalRequest, atmId);
+        verify(requestValidator, times(1))
+                .validateWithdrawalRequest(any(AtmCashWithdrawalRequestDTO.class), anyInt());
     }
 
     @Test
     public void withdrawCash_shouldReturn200_whenAmountCanBeComputed() throws Exception {
 
-        doNothing().when(requestValidator).validateWithdrawalRequest(withdrawalRequest, atmId);
-        when(atmCashService.withdrawCash(withdrawalRequest, atmId)).thenReturn(new TreeMap<>());
+        doNothing().when(requestValidator)
+                .validateWithdrawalRequest(any(AtmCashWithdrawalRequestDTO.class), anyInt());
+        when(atmCashService.withdrawCash(any(AtmCashWithdrawalRequestDTO.class), anyInt()))
+                .thenReturn(new TreeMap<>());
 
         mockMvc.perform(MockMvcRequestBuilders
                         .post(CASH_CONTROLLER_WITHDRAW_ENDPOINT)
@@ -217,8 +234,10 @@ public class AtmCashControllerTests {
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
 
-        verify(requestValidator, times(1)).validateWithdrawalRequest(withdrawalRequest, atmId);
-        verify(atmCashService, times(1)).withdrawCash(withdrawalRequest, atmId);
+        verify(requestValidator, times(1))
+                .validateWithdrawalRequest(any(AtmCashWithdrawalRequestDTO.class), anyInt());
+        verify(atmCashService, times(1))
+                .withdrawCash(any(AtmCashWithdrawalRequestDTO.class), anyInt());
     }
 
     public static String asJsonString(final Object obj) {
