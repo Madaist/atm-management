@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -226,6 +227,8 @@ public class AtmCashControllerTests {
 
         Map<Integer, Integer> expectedResponse = new TreeMap<>();
         expectedResponse.put(100, 1);
+        expectedResponse.put(500, 100);
+        expectedResponse.put(10, 5);
 
         doNothing().when(requestValidator)
                 .validateWithdrawalRequest(any(AtmCashWithdrawalRequestDTO.class), anyInt());
@@ -241,8 +244,11 @@ public class AtmCashControllerTests {
                 .andExpect(status().isOk())
                 .andReturn(), objectMapper);
 
+        assertNotNull(response);
+        assertEquals(response.get(100), 1);
+        assertEquals(response.get(500), 100);
+        assertEquals(response.get(10), 5);
 
-        assertEquals(response, expectedResponse);
         verify(requestValidator, times(1))
                 .validateWithdrawalRequest(any(AtmCashWithdrawalRequestDTO.class), anyInt());
         verify(atmCashService, times(1))
