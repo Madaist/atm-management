@@ -7,6 +7,7 @@ import com.atm.management.dto.AtmCashWithdrawalRequestDTO;
 import com.atm.management.exception.*;
 import com.atm.management.service.AtmCashService;
 import com.atm.management.validation.RequestValidator;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -20,6 +21,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.TreeMap;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -222,18 +224,25 @@ public class AtmCashControllerTests {
     @Test
     public void withdrawCash_shouldReturn200_whenAmountCanBeComputed() throws Exception {
 
+        Map<Integer, Integer> expectedResponse = new TreeMap<>();
+        expectedResponse.put(100, 1);
+
         doNothing().when(requestValidator)
                 .validateWithdrawalRequest(any(AtmCashWithdrawalRequestDTO.class), anyInt());
-        when(atmCashService.withdrawCash(any(AtmCashWithdrawalRequestDTO.class), anyInt()))
-                .thenReturn(new TreeMap<>());
 
-        mockMvc.perform(MockMvcRequestBuilders
+        when(atmCashService.withdrawCash(any(AtmCashWithdrawalRequestDTO.class), anyInt()))
+                .thenReturn(expectedResponse);
+
+        Map<Integer, Integer> response = processWithdrawSuccessResponse(mockMvc.perform(MockMvcRequestBuilders
                         .post(CASH_CONTROLLER_WITHDRAW_ENDPOINT)
                         .content(asJsonString(withdrawalRequest))
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andReturn(), objectMapper);
 
+
+        assertEquals(response, expectedResponse);
         verify(requestValidator, times(1))
                 .validateWithdrawalRequest(any(AtmCashWithdrawalRequestDTO.class), anyInt());
         verify(atmCashService, times(1))
@@ -250,5 +259,10 @@ public class AtmCashControllerTests {
 
     public static ApiResponse processResponse(MvcResult mvcResult, ObjectMapper objectMapper) throws Exception {
         return objectMapper.readValue(mvcResult.getResponse().getContentAsString(), ApiResponse.class);
+    }
+
+    public static Map<Integer, Integer> processWithdrawSuccessResponse(MvcResult mvcResult, ObjectMapper objectMapper) throws Exception {
+        return objectMapper.readValue(mvcResult.getResponse().getContentAsString(), new TypeReference<Map<Integer, Integer>>() {
+        });
     }
 }
